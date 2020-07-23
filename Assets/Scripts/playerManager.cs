@@ -8,6 +8,8 @@ public class playerManager : MonoBehaviour
     // Player specific variables
     private int health;
     private int score;
+    private int currentIndex;
+    private List<Collectable> inventory = new List<Collectable>();
 
     // Boolean values
     private bool isGamePaused = false;
@@ -18,6 +20,9 @@ public class playerManager : MonoBehaviour
     public GameObject pauseMenu;
     public GameObject winMenu;
     public GameObject loseMenu;
+
+    public Text currentItemText;
+    public Text currentItemDescriptionText;
 
     // Start is called before the first frame update
     void Start()
@@ -47,10 +52,22 @@ public class playerManager : MonoBehaviour
         {
             LoseGame();
         }
+
+        InventoryInput();
     }
 
    void FindAllMenus()
     {
+        //check for the invntory text....
+        if (currentItemText == null)
+        {
+            currentItemText = GameObject.Find("CurrentItem").GetComponent<Text>();
+        }
+
+        if (currentItemDescriptionText == null)
+        {
+            currentItemDescriptionText = GameObject.Find("CurrentItemDescription").GetComponent<Text>();
+        }
         if (healthText == null)
         {
             healthText = GameObject.Find("HealthText").GetComponent<Text>();
@@ -114,6 +131,58 @@ public class playerManager : MonoBehaviour
     public void ChangeScore(int value)
     {
         score += value;
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.GetComponent<Collectable>() != null)
+        {
+            collision.GetComponent<Collectable>().player = this.gameObject;
+            collision.gameObject.transform.parent = null;
+            inventory.Add(collision.GetComponent<Collectable>());
+            collision.gameObject.SetActive(false);
+        }
+    }
+
+    private void InventoryInput()
+    {
+        if (inventory.Count == 0)
+        {
+            currentItemText.text = "No Items";
+            currentItemDescriptionText.text = "";
+        }
+        else
+        {
+            currentItemText.text = "Slot " +
+                (currentIndex + 1).ToString() + " : " + inventory[currentIndex].collectableName;
+            currentItemDescriptionText.text = "Press E to " + inventory[currentIndex].description;
+        }
+
+        if (Input.GetKeyDown(KeyCode.E))
+        {
+            if (inventory.Count > 0)
+            {
+                inventory[currentIndex].Use();
+                inventory.RemoveAt(currentIndex);
+                if (inventory.Count == 0)
+                {
+                    currentIndex = 0;
+                }
+                else
+                {
+                    currentIndex = (currentIndex - 1) % inventory.Count;
+                }
+            }
+        }
+
+        if (Input.GetKeyDown(KeyCode.I))
+        {
+            if (inventory.Count > 0)
+            {
+                currentIndex = (currentIndex + 1) % inventory.Count;
+            }
+        }
+        
     }
 
 }
