@@ -6,10 +6,8 @@ using UnityEngine.UI;
 public class playerManager : MonoBehaviour
 {
     // Player specific variables
-    private int health;
-    private int score;
     private int currentIndex;
-    private List<Collectable> inventory = new List<Collectable>();
+    public PlayerInfo info;
 
     // Boolean values
     private bool isGamePaused = false;
@@ -27,6 +25,13 @@ public class playerManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        info = GameObject.FindGameObjectWithTag("Info").GetComponent<PlayerInfo>();
+        foreach (Collectable item in info.inventory)
+        {
+            item.player = this.gameObject;
+        }
+
+
         // Makes sure game is "unpaused"
         isGamePaused = false;
         Time.timeScale = 1.0f;
@@ -35,20 +40,20 @@ public class playerManager : MonoBehaviour
         FindAllMenus();
 
         //Start player with initial health and score
-        health = 100;
-        score = 0;
+        //health = 100;
+        //score = 0;
     }
 
     // Update is called once per frame
     void Update()
     {
-        healthText.text = "Health: " + health.ToString();
-        scoreText.text  = "Score:  " + score.ToString();
+        healthText.text = "Health: " + info.health.ToString();
+        scoreText.text  = "Score:  " + info.score.ToString();
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             PauseGame();
         }
-        if (health <= 0)
+        if (info.health <= 0)
         {
             LoseGame();
         }
@@ -125,12 +130,12 @@ public class playerManager : MonoBehaviour
 
     public void ChangeHealth(int value)
     {
-        health += value;
+        info.health += value;
     }
 
     public void ChangeScore(int value)
     {
-        score += value;
+        info.score += value;
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -139,14 +144,14 @@ public class playerManager : MonoBehaviour
         {
             collision.GetComponent<Collectable>().player = this.gameObject;
             collision.gameObject.transform.parent = null;
-            inventory.Add(collision.GetComponent<Collectable>());
+            info.inventory.Add(collision.GetComponent<Collectable>());
             collision.gameObject.SetActive(false);
         }
     }
 
     private void InventoryInput()
     {
-        if (inventory.Count == 0)
+        if (info.inventory.Count == 0)
         {
             currentItemText.text = "No Items";
             currentItemDescriptionText.text = "";
@@ -154,32 +159,32 @@ public class playerManager : MonoBehaviour
         else
         {
             currentItemText.text = "Slot " +
-                (currentIndex + 1).ToString() + " : " + inventory[currentIndex].collectableName;
-            currentItemDescriptionText.text = "Press E to " + inventory[currentIndex].description;
+                (currentIndex + 1).ToString() + " : " + info.inventory[currentIndex].collectableName;
+            currentItemDescriptionText.text = "Press E to " + info.inventory[currentIndex].description;
         }
 
         if (Input.GetKeyDown(KeyCode.E))
         {
-            if (inventory.Count > 0)
+            if (info.inventory.Count > 0)
             {
-                inventory[currentIndex].Use();
-                inventory.RemoveAt(currentIndex);
-                if (inventory.Count == 0)
+                info.inventory[currentIndex].Use();
+                info.inventory.RemoveAt(currentIndex);
+                if (info.inventory.Count == 0)
                 {
                     currentIndex = 0;
                 }
                 else
                 {
-                    currentIndex = (currentIndex - 1) % inventory.Count;
+                    currentIndex = (currentIndex - 1) % info.inventory.Count;
                 }
             }
         }
 
         if (Input.GetKeyDown(KeyCode.I))
         {
-            if (inventory.Count > 0)
+            if (info.inventory.Count > 0)
             {
-                currentIndex = (currentIndex + 1) % inventory.Count;
+                currentIndex = (currentIndex + 1) % info.inventory.Count;
             }
         }
         
