@@ -6,8 +6,13 @@ using UnityEngine.UI;
 public class playerManager : MonoBehaviour
 {
     // Player specific variables
+<<<<<<< HEAD
     private int currentIndex;
     public PlayerInfo info;
+=======
+    private int health;
+    private int score;
+>>>>>>> parent of 4a880aa... Platformer lesson 1 Coins
 
     // Boolean values
     private bool isGamePaused = false;
@@ -18,9 +23,6 @@ public class playerManager : MonoBehaviour
     public GameObject pauseMenu;
     public GameObject winMenu;
     public GameObject loseMenu;
-
-    public Text currentItemText;
-    public Text currentItemDescriptionText;
 
     // Start is called before the first frame update
     void Start()
@@ -57,22 +59,10 @@ public class playerManager : MonoBehaviour
         {
             LoseGame();
         }
-
-        InventoryInput();
     }
 
    void FindAllMenus()
     {
-        //check for the invntory text....
-        if (currentItemText == null)
-        {
-            currentItemText = GameObject.Find("CurrentItem").GetComponent<Text>();
-        }
-
-        if (currentItemDescriptionText == null)
-        {
-            currentItemDescriptionText = GameObject.Find("CurrentItemDescription").GetComponent<Text>();
-        }
         if (healthText == null)
         {
             healthText = GameObject.Find("HealthText").GetComponent<Text>();
@@ -138,6 +128,7 @@ public class playerManager : MonoBehaviour
         info.score += value;
     }
 
+<<<<<<< HEAD
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.GetComponent<Collectable>() != null)
@@ -190,4 +181,6 @@ public class playerManager : MonoBehaviour
         
     }
 
+=======
+>>>>>>> parent of 4a880aa... Platformer lesson 1 Coins
 }
