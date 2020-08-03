@@ -10,6 +10,6 @@ public class PlayerInfo : MonoBehaviour
 
     void Start()
     {
-        DontDestroyOnLoad(this.gameObject);    
+        DontDestroyOnLoad(this.gameObject);
     }
 }

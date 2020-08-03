@@ -5,16 +5,8 @@ using UnityEngine.UI;
 
 public class playerManager : MonoBehaviour
 {
-    // Player specific variables
-<<<<<<< HEAD
+    PlayerInfo info;
     private int currentIndex;
-    public PlayerInfo info;
-=======
-    private int health;
-    private int score;
->>>>>>> parent of 4a880aa... Platformer lesson 1 Coins
-
-    // Boolean values
     private bool isGamePaused = false;
 
     // UI stuff
@@ -23,15 +15,14 @@ public class playerManager : MonoBehaviour
     public GameObject pauseMenu;
     public GameObject winMenu;
     public GameObject loseMenu;
+    public Text currentItemText;
+    public Text currentItemDescriptionText;
+
 
     // Start is called before the first frame update
     void Start()
     {
         info = GameObject.FindGameObjectWithTag("Info").GetComponent<PlayerInfo>();
-        foreach (Collectable item in info.inventory)
-        {
-            item.player = this.gameObject;
-        }
 
 
         // Makes sure game is "unpaused"
@@ -41,14 +32,12 @@ public class playerManager : MonoBehaviour
         // Make sure all menus are filled in
         FindAllMenus();
 
-        //Start player with initial health and score
-        //health = 100;
-        //score = 0;
     }
 
     // Update is called once per frame
     void Update()
     {
+        InventoryInput();
         healthText.text = "Health: " + info.health.ToString();
         scoreText.text  = "Score:  " + info.score.ToString();
         if (Input.GetKeyDown(KeyCode.Escape))
@@ -63,6 +52,14 @@ public class playerManager : MonoBehaviour
 
    void FindAllMenus()
     {
+        if (currentItemText == null)
+        {
+            currentItemText = GameObject.Find("CurrentItemText").GetComponent<Text>();
+        }
+        if (currentItemDescriptionText == null)
+        {
+            currentItemDescriptionText = GameObject.Find("CurrentItemDescription").GetComponent<Text>();
+        }
         if (healthText == null)
         {
             healthText = GameObject.Find("HealthText").GetComponent<Text>();
@@ -125,17 +122,17 @@ public class playerManager : MonoBehaviour
 
     public void ChangeScore(int value)
     {
-        info.score += value;
+       info. score += value;
     }
 
-<<<<<<< HEAD
     private void OnTriggerEnter2D(Collider2D collision)
     {
+        Debug.Log(collision.name);
         if (collision.GetComponent<Collectable>() != null)
         {
             collision.GetComponent<Collectable>().player = this.gameObject;
             collision.gameObject.transform.parent = null;
-            info.inventory.Add(collision.GetComponent<Collectable>());
+       info. inventory.Add(collision.GetComponent<Collectable>());
             collision.gameObject.SetActive(false);
         }
     }
@@ -158,8 +155,8 @@ public class playerManager : MonoBehaviour
         {
             if (info.inventory.Count > 0)
             {
-                info.inventory[currentIndex].Use();
-                info.inventory.RemoveAt(currentIndex);
+               info. inventory[currentIndex].Use();
+               info. inventory.RemoveAt(currentIndex);
                 if (info.inventory.Count == 0)
                 {
                     currentIndex = 0;
@@ -181,6 +178,4 @@ public class playerManager : MonoBehaviour
         
     }
 
-=======
->>>>>>> parent of 4a880aa... Platformer lesson 1 Coins
 }

@@ -7,13 +7,15 @@ public class Coin : Collectable
     private void Start()
     {
         collectableName = "Coin";
-        description = "Increase Score by 10";
+        description = "Gives 10 Points";
     }
+
     public override void Use()
     {
-        player.GetComponent<playerManager>().info.inventory.Remove(this);
         player.GetComponent<playerManager>().ChangeScore(10);
-        Destroy(this.gameObject);
         
+        Destroy(this.gameObject);
     }
+
+    
 }
