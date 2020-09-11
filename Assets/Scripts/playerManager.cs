@@ -5,11 +5,8 @@ using UnityEngine.UI;
 
 public class playerManager : MonoBehaviour
 {
-    // Player specific variables
-    private int health;
-    private int score;
-
-    // Boolean values
+    PlayerInfo info;
+    private int currentIndex;
     private bool isGamePaused = false;
 
     // UI stuff
@@ -18,10 +15,16 @@ public class playerManager : MonoBehaviour
     public GameObject pauseMenu;
     public GameObject winMenu;
     public GameObject loseMenu;
+    public Text currentItemText;
+    public Text currentItemDescriptionText;
+
 
     // Start is called before the first frame update
     void Start()
     {
+        info = GameObject.FindGameObjectWithTag("Info").GetComponent<PlayerInfo>();
+
+
         // Makes sure game is "unpaused"
         isGamePaused = false;
         Time.timeScale = 1.0f;
@@ -29,21 +32,19 @@ public class playerManager : MonoBehaviour
         // Make sure all menus are filled in
         FindAllMenus();
 
-        //Start player with initial health and score
-        health = 100;
-        score = 0;
     }
 
     // Update is called once per frame
     void Update()
     {
-        healthText.text = "Health: " + health.ToString();
-        scoreText.text  = "Score:  " + score.ToString();
+        InventoryInput();
+        healthText.text = "Health: " + info.health.ToString();
+        scoreText.text  = "Score:  " + info.score.ToString();
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             PauseGame();
         }
-        if (health <= 0)
+        if (info.health <= 0)
         {
             LoseGame();
         }
@@ -51,6 +52,14 @@ public class playerManager : MonoBehaviour
 
    void FindAllMenus()
     {
+        if (currentItemText == null)
+        {
+            currentItemText = GameObject.Find("CurrentItemText").GetComponent<Text>();
+        }
+        if (currentItemDescriptionText == null)
+        {
+            currentItemDescriptionText = GameObject.Find("CurrentItemDescription").GetComponent<Text>();
+        }
         if (healthText == null)
         {
             healthText = GameObject.Find("HealthText").GetComponent<Text>();
@@ -108,12 +117,65 @@ public class playerManager : MonoBehaviour
 
     public void ChangeHealth(int value)
     {
-        health += value;
+        info.health += value;
     }
 
     public void ChangeScore(int value)
     {
-        score += value;
+       info. score += value;
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        Debug.Log(collision.name);
+        if (collision.GetComponent<Collectable>() != null)
+        {
+            collision.GetComponent<Collectable>().player = this.gameObject;
+            collision.gameObject.transform.parent = null;
+       info. inventory.Add(collision.GetComponent<Collectable>());
+            collision.gameObject.SetActive(false);
+        }
+    }
+
+    private void InventoryInput()
+    {
+        if (info.inventory.Count == 0)
+        {
+            currentItemText.text = "No Items";
+            currentItemDescriptionText.text = "";
+        }
+        else
+        {
+            currentItemText.text = "Slot " +
+                (currentIndex + 1).ToString() + " : " + info.inventory[currentIndex].collectableName;
+            currentItemDescriptionText.text = "Press E to " + info.inventory[currentIndex].description;
+        }
+
+        if (Input.GetKeyDown(KeyCode.E))
+        {
+            if (info.inventory.Count > 0)
+            {
+               info. inventory[currentIndex].Use();
+               info. inventory.RemoveAt(currentIndex);
+                if (info.inventory.Count == 0)
+                {
+                    currentIndex = 0;
+                }
+                else
+                {
+                    currentIndex = (currentIndex - 1) % info.inventory.Count;
+                }
+            }
+        }
+
+        if (Input.GetKeyDown(KeyCode.I))
+        {
+            if (info.inventory.Count > 0)
+            {
+                currentIndex = (currentIndex + 1) % info.inventory.Count;
+            }
+        }
+        
     }
 
 }
